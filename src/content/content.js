@@ -1,9 +1,9 @@
 /**
- * SkillTube - Main Content Script (AI-Powered Native UI Profession Filter)
- * Removes music, gaming, and non-profession videos using Browser AI & Gemini API zero-shot classification.
+ * SkillTube - Main Content Script (AI-Powered Filter with Developer Console Overlay)
+ * Removes non-profession videos from YouTube Native UI & provides live real-time debug logs.
  */
 
-import { getSettings, subscribeSettings } from '../utils/storage.js';
+import { getSettings, subscribeSettings, addDebugLog } from '../utils/storage.js';
 import { isVideoOnTopic, TAXONOMY } from '../utils/taxonomy.js';
 import { ShieldHUD } from './shield_hud.js';
 import { classifyVideoWithAI } from '../utils/ai_classifier.js';
@@ -14,10 +14,12 @@ class SkillTubeController {
     this.shieldHud = null;
     this.currentPath = window.location.pathname;
     this.observer = null;
+    this.devConsoleEl = null;
+    this.processedVideos = new Set();
   }
 
   async init() {
-    console.log("[SkillTube] Initializing AI-Powered Native UI Profession Filter...");
+    console.log("[SkillTube] Initializing AI Filter & Developer Mode Console...");
     this.settings = await getSettings();
     this.shieldHud = new ShieldHUD(this.settings);
 
@@ -26,6 +28,7 @@ class SkillTubeController {
       this.settings = { ...this.settings, ...newSettings };
       this.shieldHud.updateSettings(this.settings);
       this.applyShortsBlocking();
+      this.updateDevConsole();
       this.filterNativeInterface();
     });
 
@@ -38,6 +41,7 @@ class SkillTubeController {
     this.applyShortsBlocking();
     this.handleRoute();
     this.setupMutationObserver();
+    this.updateDevConsole();
   }
 
   applyShortsBlocking() {
@@ -84,12 +88,70 @@ class SkillTubeController {
   }
 
   /**
+   * Updates or removes the live floating Developer Mode Console Overlay on YouTube
+   */
+  updateDevConsole() {
+    if (!this.settings.isEnabled || !this.settings.developerMode) {
+      if (this.devConsoleEl) {
+        this.devConsoleEl.remove();
+        this.devConsoleEl = null;
+      }
+      return;
+    }
+
+    if (!this.devConsoleEl) {
+      this.devConsoleEl = document.createElement("div");
+      this.devConsoleEl.id = "skilltube-dev-overlay";
+      this.devConsoleEl.className = "skilltube-dev-overlay";
+      this.devConsoleEl.innerHTML = `
+        <div class="dev-header">
+          <span>🐞 SkillTube Dev Console</span>
+          <button id="dev-clear-btn" class="dev-btn">Clear</button>
+        </div>
+        <div class="dev-logs-scroll" id="dev-logs-scroll">
+          <div class="dev-log-row info">Developer Mode active. Log entries will appear live below...</div>
+        </div>
+      `;
+
+      document.body.appendChild(this.devConsoleEl);
+
+      this.devConsoleEl.querySelector("#dev-clear-btn")?.addEventListener("click", () => {
+        const scroll = this.devConsoleEl.querySelector("#dev-logs-scroll");
+        if (scroll) scroll.innerHTML = `<div class="dev-log-row info">Console cleared.</div>`;
+      });
+    }
+  }
+
+  logToDevConsole(logEntry) {
+    if (!this.settings.developerMode || !this.devConsoleEl) return;
+
+    const scroll = this.devConsoleEl.querySelector("#dev-logs-scroll");
+    if (!scroll) return;
+
+    const row = document.createElement("div");
+    const isAllowed = logEntry.status === "ALLOWED";
+    row.className = `dev-log-row ${isAllowed ? 'allowed' : 'hidden'}`;
+    
+    row.innerHTML = `
+      <span class="dev-time">[${new Date().toLocaleTimeString()}]</span>
+      <span class="dev-tag ${isAllowed ? 'tag-allow' : 'tag-hide'}">${logEntry.status}</span>
+      <span class="dev-title" title="${logEntry.title}">${logEntry.title.substring(0, 45)}...</span>
+      <span class="dev-reason">(${logEntry.reason})</span>
+    `;
+
+    scroll.prepend(row);
+    // Keep max 30 rows in DOM console
+    if (scroll.children.length > 30) {
+      scroll.lastElementChild.remove();
+    }
+  }
+
+  /**
    * Filters YouTube's native UI in-place using Taxonomy Keywords & AI Classifier
    */
   filterNativeInterface() {
     if (!this.settings.isEnabled) return;
 
-    // Home Grid Selectors
     const homeSelectors = [
       "ytd-browse[page-subtype='home'] ytd-rich-item-renderer",
       "ytd-browse[page-subtype='home'] yt-lockup-view-model",
@@ -97,7 +159,6 @@ class SkillTubeController {
       "#primary #contents yt-lockup-view-model"
     ];
 
-    // Watch Sidebar Selectors
     const sidebarSelectors = [
       "#secondary ytd-compact-video-renderer",
       "#secondary ytd-rich-item-renderer",
@@ -142,6 +203,8 @@ class SkillTubeController {
 
       let finalOnTopic = kwResult.onTopic;
       let badgeLabel = "🎓 ON-TRACK";
+      let filterReason = kwResult.matchedKeyword ? `Matched: "${kwResult.matchedKeyword}"` : (kwResult.reason || "no match");
+      let method = "KEYWORD";
 
       // 2. Try AI Classification if enabled
       if (this.settings.aiEnabled) {
@@ -149,7 +212,22 @@ class SkillTubeController {
         if (aiResult && aiResult.aiVerified) {
           finalOnTopic = aiResult.onTopic;
           badgeLabel = "🤖 AI ON-TRACK";
+          filterReason = `AI Verdict: ${aiResult.onTopic ? 'YES' : 'NO'}`;
+          method = "AI";
         }
+      }
+
+      const logKey = `${titleText}_${finalOnTopic}`;
+      if (!this.processedVideos.has(logKey)) {
+        this.processedVideos.add(logKey);
+        const logEntry = {
+          title: titleText,
+          status: finalOnTopic ? "ALLOWED" : "HIDDEN",
+          reason: filterReason,
+          method
+        };
+        addDebugLog(logEntry);
+        this.logToDevConsole(logEntry);
       }
 
       if (!finalOnTopic) {
@@ -177,6 +255,10 @@ class SkillTubeController {
 
   cleanup() {
     this.shieldHud.remove();
+    if (this.devConsoleEl) {
+      this.devConsoleEl.remove();
+      this.devConsoleEl = null;
+    }
     document.body.classList.remove("skilltube-block-shorts");
     document.body.classList.remove("skilltube-active");
     document.querySelectorAll("ytd-rich-item-renderer, ytd-compact-video-renderer, yt-lockup-view-model").forEach(el => {

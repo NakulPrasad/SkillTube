@@ -97,6 +97,17 @@
 
         <div class="setting-item">
           <div class="setting-text">
+            <span class="setting-title">🐞 Developer Mode (Live Debug Logs)</span>
+            <span class="setting-desc">Show real-time decision logs & overlay on YouTube</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="dev-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
             <span class="setting-title">🚫 Nuke YouTube Shorts</span>
             <span class="setting-desc">Remove algorithmic short-form loops completely</span>
           </div>
@@ -115,6 +126,17 @@
             <input type="checkbox" id="sidebar-toggle" checked>
             <span class="slider round"></span>
           </label>
+        </div>
+      </div>
+
+      <!-- Developer Mode Console Log Box (shown when Dev Mode is active) -->
+      <div class="dev-logs-box" id="dev-logs-box" style="display: none;">
+        <div class="label-row">
+          <span class="form-label">🐞 Live Filter Decision Logs</span>
+          <button id="clear-popup-logs-btn" class="custom-link-btn">Clear Logs</button>
+        </div>
+        <div class="popup-logs-scroll" id="popup-logs-scroll">
+          <div class="log-line info">No filter events logged yet...</div>
         </div>
       </div>
 

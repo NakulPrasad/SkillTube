@@ -1,8 +1,8 @@
 /**
- * SkillTube - Popup Logic (Upgraded with AI Settings & API Key Intake)
+ * SkillTube - Popup Logic (Upgraded with Developer Mode Console)
  */
 
-import { getSettings, updateSettings } from '../utils/storage.js';
+import { getSettings, updateSettings, clearDebugLogs } from '../utils/storage.js';
 import { TAXONOMY, generateCustomRoadmap } from '../utils/taxonomy.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const skillsContainer = document.getElementById("skills-chips");
   const shieldToggle = document.getElementById("shield-toggle");
   const aiToggle = document.getElementById("ai-toggle");
+  const devToggle = document.getElementById("dev-toggle");
   const shortsToggle = document.getElementById("shorts-toggle");
   const sidebarToggle = document.getElementById("sidebar-toggle");
   const statShielded = document.getElementById("stat-shielded");
@@ -21,6 +22,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // API Key elements
   const geminiKeyInput = document.getElementById("gemini-key-input");
   const saveKeyBtn = document.getElementById("save-key-btn");
+
+  // Developer Mode elements
+  const devLogsBox = document.getElementById("dev-logs-box");
+  const popupLogsScroll = document.getElementById("popup-logs-scroll");
+  const clearPopupLogsBtn = document.getElementById("clear-popup-logs-btn");
 
   // Custom roadmap elements
   const customRoadmapBtn = document.getElementById("custom-roadmap-btn");
@@ -59,12 +65,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  function renderDevLogs() {
+    if (!settings.developerMode) {
+      devLogsBox.style.display = "none";
+      return;
+    }
+
+    devLogsBox.style.display = "flex";
+    popupLogsScroll.innerHTML = "";
+
+    const logs = settings.debugLogs || [];
+    if (logs.length === 0) {
+      popupLogsScroll.innerHTML = `<div class="log-line info">No filter decisions logged yet...</div>`;
+      return;
+    }
+
+    logs.forEach(log => {
+      const line = document.createElement("div");
+      const isAllowed = log.status === "ALLOWED";
+      line.className = `log-line ${isAllowed ? 'allowed' : 'hidden'}`;
+      line.innerHTML = `[${log.time}] <strong>[${log.status}]</strong> ${log.title} (${log.reason})`;
+      popupLogsScroll.appendChild(line);
+    });
+  }
+
   populateProfessions();
 
   // Render initial state
   masterToggle.checked = settings.isEnabled;
   shieldToggle.checked = settings.historyShieldEnabled;
   aiToggle.checked = settings.aiEnabled !== false;
+  devToggle.checked = settings.developerMode || false;
   shortsToggle.checked = settings.blockShorts;
   sidebarToggle.checked = settings.sidebarFilteringEnabled;
   geminiKeyInput.value = settings.geminiApiKey || "";
@@ -73,6 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   statContinue.textContent = (settings.continueLearning || []).length;
 
   renderSkillsChips(settings.activeProfession, settings.activeSkills);
+  renderDevLogs();
 
   // Master Toggle
   masterToggle.addEventListener("change", async () => {
@@ -108,6 +140,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   // AI Toggle
   aiToggle.addEventListener("change", async () => {
     await updateSettings({ aiEnabled: aiToggle.checked });
+  });
+
+  // Dev Mode Toggle
+  devToggle.addEventListener("change", async () => {
+    const developerMode = devToggle.checked;
+    settings.developerMode = developerMode;
+    await updateSettings({ developerMode });
+    renderDevLogs();
+  });
+
+  // Clear Popup Logs
+  clearPopupLogsBtn.addEventListener("click", async () => {
+    await clearDebugLogs();
+    settings.debugLogs = [];
+    renderDevLogs();
   });
 
   // Save Gemini API Key
