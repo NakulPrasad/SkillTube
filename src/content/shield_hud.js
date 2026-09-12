@@ -13,6 +13,8 @@ export class ShieldHUD {
     this.manualOverride = null;
     this.progressTrackingInterval = null;
     this.currentVideoId = null;
+    this.lastShieldState = null;
+    this.shieldedVideoCounted = new Set();
   }
 
   updateSettings(settings) {
@@ -65,14 +67,20 @@ export class ShieldHUD {
       ? false 
       : (!isTopicMatch && this.settings.historyShieldEnabled);
 
-    // Communicate with background service worker
-    chrome.runtime?.sendMessage?.({
-      type: "TOGGLE_SHIELD",
-      enabled: isShielded
-    });
+    // Communicate with background service worker only if state changed
+    if (this.lastShieldState !== isShielded) {
+      this.lastShieldState = isShielded;
+      chrome.runtime?.sendMessage?.({
+        type: "TOGGLE_SHIELD",
+        enabled: isShielded
+      });
+    }
 
     if (isShielded) {
-      chrome.runtime?.sendMessage?.({ type: "INCREMENT_SHIELD_STAT" });
+      if (videoId && !this.shieldedVideoCounted.has(videoId)) {
+        this.shieldedVideoCounted.add(videoId);
+        chrome.runtime?.sendMessage?.({ type: "INCREMENT_SHIELD_STAT" });
+      }
       this.stopProgressTracking();
     } else {
       // Start tracking progress for Continue Learning shelf
@@ -172,5 +180,6 @@ export class ShieldHUD {
     }
     this.manualOverride = null;
     this.currentVideoId = null;
+    this.lastShieldState = null;
   }
 }

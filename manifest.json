@@ -26,11 +26,13 @@
   },
   "permissions": [
     "storage",
-    "declarativeNetRequest"
+    "declarativeNetRequest",
+    "contextMenus"
   ],
   "host_permissions": [
     "*://*.youtube.com/*",
-    "*://s.youtube.com/*"
+    "*://s.youtube.com/*",
+    "https://generativelanguage.googleapis.com/*"
   ],
   "content_scripts": [
     {

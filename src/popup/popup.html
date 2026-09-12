@@ -74,6 +74,17 @@
 
         <div class="setting-item">
           <div class="setting-text">
+            <span class="setting-title">🎵 Allow Music & Study Beats</span>
+            <span class="setting-desc">Keep lofi, coding beats, and music visible</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="music-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
             <span class="setting-title">🤖 AI Semantic Classifier</span>
             <span class="setting-desc">Use Browser AI / Gemini Nano for 100% video accuracy</span>
           </div>
@@ -83,16 +94,53 @@
           </label>
         </div>
 
-        <!-- Gemini API Key Input -->
+        <!-- AI Model Selector & Gemini API Key Box -->
         <div class="api-key-box" id="api-key-box">
           <div class="label-row">
-            <span class="form-label">Gemini API Key (Optional Cloud AI)</span>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="custom-link-btn">Get Free Key ↗</a>
+            <span class="form-label">Gemini Model</span>
+            <span class="label-hint" id="model-hint">Latest 3.8/3.7</span>
           </div>
-          <div class="input-inline">
-            <input type="password" id="gemini-key-input" placeholder="AIzaSy..." />
-            <button id="save-key-btn" class="btn-small">Save</button>
+          <div class="select-wrapper">
+            <select id="ai-model-select" class="custom-select">
+              <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Latest)</option>
+              <option value="gemini-3.7-flash">🚀 Gemini 3.7 Flash</option>
+              <option value="gemini-3.7-pro">🧠 Gemini 3.7 Pro</option>
+              <option value="gemini-2.0-flash">⚡ Gemini 2.0 Flash</option>
+              <option value="gemini-1.5-flash">📦 Gemini 1.5 Flash (Legacy)</option>
+              <option value="window_ai">💻 Browser Local AI (Gemini Nano / Free)</option>
+              <option value="custom">✏️ Custom Model ID...</option>
+            </select>
           </div>
+
+          <!-- Custom Model ID input -->
+          <div id="custom-model-box" style="display: none; margin-top: 4px;">
+            <input type="text" id="custom-model-input" placeholder="e.g. gemini-3.8-pro, gemini-3.7..." style="width: 100%;" />
+          </div>
+
+          <div class="label-row" style="margin-top: 6px;">
+            <span class="form-label">Thinking Effort</span>
+            <span class="label-hint">Low = Ultra Fast</span>
+          </div>
+          <div class="select-wrapper">
+            <select id="thinking-level-select" class="custom-select">
+              <option value="low" selected>⚡ Low (Fast & Low Latency - Recommended)</option>
+              <option value="medium">⚖️ Medium (Balanced Reasoning)</option>
+              <option value="high">🧠 High (Deep Multi-Step Reasoning)</option>
+              <option value="off">🚫 Off (Minimal / Direct Response)</option>
+            </select>
+          </div>
+
+          <div id="gemini-key-group">
+            <div class="label-row" style="margin-top: 6px;">
+              <span class="form-label">Gemini API Key</span>
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" class="custom-link-btn">Get Free Key ↗</a>
+            </div>
+            <div class="input-inline">
+              <input type="password" id="gemini-key-input" placeholder="AIzaSy..." />
+              <button id="save-key-btn" class="btn-small">Test & Save</button>
+            </div>
+          </div>
+          <div id="api-status-msg" class="api-status-msg"></div>
         </div>
 
         <div class="setting-item">
@@ -129,7 +177,7 @@
         </div>
       </div>
 
-      <!-- Developer Mode Console Log Box (shown when Dev Mode is active) -->
+      <!-- Developer Mode Console Log Box -->
       <div class="dev-logs-box" id="dev-logs-box" style="display: none;">
         <div class="label-row">
           <span class="form-label">🐞 Live Filter Decision Logs</span>

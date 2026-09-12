@@ -14,18 +14,53 @@ document.addEventListener("DOMContentLoaded", async () => {
   const clearCacheBtn = document.getElementById("clear-cache-btn");
   const statusToast = document.getElementById("status-toast");
 
-  // API Key elements
+  // API Key & Model Selector elements
+  const optAiModelSelect = document.getElementById("opt-ai-model-select");
+  const optThinkingLevelSelect = document.getElementById("opt-thinking-level-select");
+  const optGeminiKeyGroup = document.getElementById("opt-gemini-key-group");
   const optGeminiKey = document.getElementById("opt-gemini-key");
   const optSaveKeyBtn = document.getElementById("opt-save-key-btn");
 
   let settings = await getSettings();
 
+  if (optAiModelSelect) {
+    optAiModelSelect.value = settings.aiModel || "gemini-3.8-flash";
+    if (optAiModelSelect.value === "window_ai" && optGeminiKeyGroup) {
+      optGeminiKeyGroup.style.opacity = "0.5";
+    }
+    optAiModelSelect.addEventListener("change", async () => {
+      const selectedModel = optAiModelSelect.value;
+      if (optGeminiKeyGroup) {
+        optGeminiKeyGroup.style.opacity = selectedModel === "window_ai" ? "0.5" : "1";
+      }
+      await updateSettings({
+        aiModel: selectedModel,
+        aiProvider: selectedModel === "window_ai" ? "window_ai" : "gemini"
+      });
+      showToast(`AI Model set to ${selectedModel}`);
+    });
+  }
+
+  if (optThinkingLevelSelect) {
+    optThinkingLevelSelect.value = settings.thinkingLevel || "low";
+    optThinkingLevelSelect.addEventListener("change", async () => {
+      const thinkingLevel = optThinkingLevelSelect.value;
+      await updateSettings({ thinkingLevel });
+      showToast(`Thinking effort set to ${thinkingLevel}`);
+    });
+  }
+
   optGeminiKey.value = settings.geminiApiKey || "";
 
   optSaveKeyBtn.addEventListener("click", async () => {
     const key = optGeminiKey.value.trim();
-    await updateSettings({ geminiApiKey: key });
-    showToast("Gemini API Key saved successfully!");
+    const model = optAiModelSelect ? optAiModelSelect.value : (settings.aiModel || "gemini-1.5-flash");
+    await updateSettings({ 
+      geminiApiKey: key,
+      aiModel: model,
+      aiProvider: model === "window_ai" ? "window_ai" : "gemini"
+    });
+    showToast("AI configuration saved successfully!");
   });
 
   // Render blocked tags
