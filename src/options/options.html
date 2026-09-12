@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillTube - Advanced Settings & Custom Profiles</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="options-header">
+      <div class="brand">
+        <img src="../../icons/logo.png" class="brand-logo-img" alt="SkillTube Logo" />
+        <div>
+          <h1>SkillTube Configuration</h1>
+          <p>Customize your learning tracks, trusted creators, and stealth shield rules</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="options-grid">
+      <!-- Section 1: Custom Blocked Keywords -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🚫 Blacklisted Keywords (Feed & Sidebar Filter)</h3>
+          <p>Videos with these keywords will be automatically hidden from your YouTube experience.</p>
+        </div>
+        <div class="tags-input-container">
+          <div class="tags-list" id="blocked-tags-list"></div>
+          <div class="input-row">
+            <input type="text" id="new-tag-input" placeholder="e.g. gaming, prank, reaction" />
+            <button id="add-tag-btn" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Trusted Creators -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🌟 Curated Channels & Mentors</h3>
+          <p>Channels that will be highlighted in your "Trusted Industry Mentors" rail.</p>
+        </div>
+        <div class="tags-list" id="creators-list"></div>
+      </div>
+
+      <!-- Section 3: Data & Storage Management -->
+      <div class="card">
+        <div class="card-header">
+          <h3>💾 Profile Backup & Cache</h3>
+          <p>Export your tailored skill configuration or clear temporary search caches.</p>
+        </div>
+        <div class="actions-row">
+          <button id="export-profile-btn" class="btn btn-secondary">Export Profile (.json)</button>
+          <button id="clear-cache-btn" class="btn btn-danger">Clear Video Cache</button>
+        </div>
+        <div id="status-toast" class="status-toast"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillTube Control</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="brand">
+        <img src="../../icons/logo.png" class="brand-logo-img" alt="SkillTube Logo" />
+        <div>
+          <h1 class="brand-title">SkillTube</h1>
+          <span class="brand-sub">Curated Professional Feeds</span>
+        </div>
+      </div>
+      <label class="switch" title="Master Toggle">
+        <input type="checkbox" id="master-toggle" checked>
+        <span class="slider round"></span>
+      </label>
+    </header>
+
+    <!-- Main Content -->
+    <main class="popup-body">
+      <!-- Profession Selector -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="profession-select" class="form-label">Active Profession</label>
+          <button id="custom-roadmap-btn" class="custom-link-btn">+ New Job Title</button>
+        </div>
+        <div class="select-wrapper">
+          <select id="profession-select" class="custom-select">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Custom Job Input Modal / Inline Form -->
+      <div class="custom-job-box" id="custom-job-box" style="display: none;">
+        <label class="form-label">Create Custom Career Roadmap</label>
+        <div class="input-inline">
+          <input type="text" id="custom-job-input" placeholder="e.g. Quant Trader, Robotics..." />
+          <button id="save-custom-job-btn" class="btn-small">Generate</button>
+          <button id="cancel-custom-job-btn" class="btn-cancel">✕</button>
+        </div>
+      </div>
+
+      <!-- Skills Chips -->
+      <div class="form-group">
+        <div class="label-row">
+          <label class="form-label">Focus Skills & Tracks</label>
+          <span class="label-hint">Click to toggle</span>
+        </div>
+        <div class="chips-container" id="skills-chips">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Features Toggles -->
+      <div class="settings-section">
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">🛡️ History & Search Shield</span>
+            <span class="setting-desc">Block tracking on casual searches to keep feed pure</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="shield-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">🚫 Nuke YouTube Shorts</span>
+            <span class="setting-desc">Remove algorithmic short-form loops completely</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="shorts-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">🎯 Clean Sidebar</span>
+            <span class="setting-desc">Filter unrelated videos when watching tutorials</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="sidebar-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-card">
+        <div class="stat-item">
+          <span class="stat-num" id="stat-shielded">0</span>
+          <span class="stat-label">Shielded</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" id="stat-continue">0</span>
+          <span class="stat-label">In Progress</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" id="stat-skills">0</span>
+          <span class="stat-label">Skills</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <button id="open-options-btn" class="footer-link-btn">⚙️ Advanced Settings</button>
+      <a href="https://www.youtube.com" target="_blank" class="yt-link">Open YouTube ↗</a>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
