@@ -1,11 +1,12 @@
 /**
- * SkillTube - Main Content Script (Robust In-Place Profession Filter)
- * Removes music, gaming, and non-profession videos from YouTube Native UI.
+ * SkillTube - Main Content Script (AI-Powered Native UI Profession Filter)
+ * Removes music, gaming, and non-profession videos using Browser AI & Gemini API zero-shot classification.
  */
 
 import { getSettings, subscribeSettings } from '../utils/storage.js';
-import { isVideoOnTopic } from '../utils/taxonomy.js';
+import { isVideoOnTopic, TAXONOMY } from '../utils/taxonomy.js';
 import { ShieldHUD } from './shield_hud.js';
+import { classifyVideoWithAI } from '../utils/ai_classifier.js';
 
 class SkillTubeController {
   constructor() {
@@ -16,7 +17,7 @@ class SkillTubeController {
   }
 
   async init() {
-    console.log("[SkillTube] Initializing Native UI Profession Filter...");
+    console.log("[SkillTube] Initializing AI-Powered Native UI Profession Filter...");
     this.settings = await getSettings();
     this.shieldHud = new ShieldHUD(this.settings);
 
@@ -83,8 +84,7 @@ class SkillTubeController {
   }
 
   /**
-   * Filters YouTube's native UI in-place (Home grid & Watch sidebar)
-   * Keeps tech/profession videos visible, and hides music/gaming/entertainment videos.
+   * Filters YouTube's native UI in-place using Taxonomy Keywords & AI Classifier
    */
   filterNativeInterface() {
     if (!this.settings.isEnabled) return;
@@ -116,9 +116,10 @@ class SkillTubeController {
       : homeSelectors;
 
     const items = document.querySelectorAll(allSelectors.join(", "));
+    const activeProf = TAXONOMY[this.settings.activeProfession] || (this.settings.customProfessions && this.settings.customProfessions[this.settings.activeProfession]);
+    const profName = activeProf ? activeProf.name : "Software Engineering";
 
-    items.forEach(item => {
-      // Robust text extraction from item's innerText or title element
+    items.forEach(async (item) => {
       const titleEl = item.querySelector(
         "#video-title, .title, h3, " +
         ".yt-lockup-metadata-view-model-wiz__title, " +
@@ -131,32 +132,42 @@ class SkillTubeController {
 
       if (!titleText) return;
 
-      const result = isVideoOnTopic(
+      // 1. Keyword Taxonomy Check
+      const kwResult = isVideoOnTopic(
         titleText,
         this.settings.activeSkills || [],
         this.settings.activeProfession || "software_engineering",
         this.settings.customProfessions || {}
       );
 
-      if (!result.onTopic) {
-        // Hide music, gaming, movies, and off-topic non-profession videos
+      let finalOnTopic = kwResult.onTopic;
+      let badgeLabel = "🎓 ON-TRACK";
+
+      // 2. Try AI Classification if enabled
+      if (this.settings.aiEnabled) {
+        const aiResult = await classifyVideoWithAI(titleText, profName, this.settings);
+        if (aiResult && aiResult.aiVerified) {
+          finalOnTopic = aiResult.onTopic;
+          badgeLabel = "🤖 AI ON-TRACK";
+        }
+      }
+
+      if (!finalOnTopic) {
         item.style.setProperty("display", "none", "important");
       } else {
-        // Keep profession-related videos visible in native YouTube UI
         item.style.removeProperty("display");
         
-        // Add ON-TRACK badge if not present
         if (!item.querySelector(".skilltube-sidebar-tag")) {
           const badge = document.createElement("span");
           badge.className = "skilltube-sidebar-tag";
-          badge.innerText = "🎓 ON-TRACK";
+          badge.innerText = badgeLabel;
           const targetMeta = item.querySelector(".metadata, #metadata, .yt-lockup-metadata-view-model-wiz, #byline-container, #meta");
           if (targetMeta) targetMeta.prepend(badge);
         }
       }
     });
 
-    // Remove YouTube Shorts shelves if shorts blocker is active
+    // Remove Shorts shelves if shorts blocker is active
     if (this.settings.blockShorts) {
       document.querySelectorAll("ytd-reel-shelf-renderer, ytd-rich-shelf-renderer[is-shorts]").forEach(el => {
         el.style.setProperty("display", "none", "important");

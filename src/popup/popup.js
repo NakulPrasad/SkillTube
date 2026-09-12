@@ -1,5 +1,5 @@
 /**
- * SkillTube - Popup Logic (Upgraded)
+ * SkillTube - Popup Logic (Upgraded with AI Settings & API Key Intake)
  */
 
 import { getSettings, updateSettings } from '../utils/storage.js';
@@ -10,12 +10,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const professionSelect = document.getElementById("profession-select");
   const skillsContainer = document.getElementById("skills-chips");
   const shieldToggle = document.getElementById("shield-toggle");
+  const aiToggle = document.getElementById("ai-toggle");
   const shortsToggle = document.getElementById("shorts-toggle");
   const sidebarToggle = document.getElementById("sidebar-toggle");
   const statShielded = document.getElementById("stat-shielded");
   const statContinue = document.getElementById("stat-continue");
   const statSkills = document.getElementById("stat-skills");
   const openOptionsBtn = document.getElementById("open-options-btn");
+
+  // API Key elements
+  const geminiKeyInput = document.getElementById("gemini-key-input");
+  const saveKeyBtn = document.getElementById("save-key-btn");
 
   // Custom roadmap elements
   const customRoadmapBtn = document.getElementById("custom-roadmap-btn");
@@ -40,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       professionSelect.appendChild(opt);
     });
 
-    // Custom professions created by user
+    // Custom professions
     if (settings.customProfessions) {
       Object.values(settings.customProfessions).forEach(prof => {
         const opt = document.createElement("option");
@@ -59,8 +64,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Render initial state
   masterToggle.checked = settings.isEnabled;
   shieldToggle.checked = settings.historyShieldEnabled;
+  aiToggle.checked = settings.aiEnabled !== false;
   shortsToggle.checked = settings.blockShorts;
   sidebarToggle.checked = settings.sidebarFilteringEnabled;
+  geminiKeyInput.value = settings.geminiApiKey || "";
+
   statShielded.textContent = settings.stats?.videosShielded || 0;
   statContinue.textContent = (settings.continueLearning || []).length;
 
@@ -95,6 +103,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const historyShieldEnabled = shieldToggle.checked;
     await updateSettings({ historyShieldEnabled });
     chrome.runtime?.sendMessage?.({ type: "TOGGLE_SHIELD", enabled: historyShieldEnabled });
+  });
+
+  // AI Toggle
+  aiToggle.addEventListener("change", async () => {
+    await updateSettings({ aiEnabled: aiToggle.checked });
+  });
+
+  // Save Gemini API Key
+  saveKeyBtn.addEventListener("click", async () => {
+    const key = geminiKeyInput.value.trim();
+    await updateSettings({ geminiApiKey: key });
+    saveKeyBtn.textContent = "Saved ✓";
+    setTimeout(() => { saveKeyBtn.textContent = "Save"; }, 2000);
   });
 
   // Shorts Toggle

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SkillTube - Popup Styles (Upgraded with Logo Image)
+   SkillTube - Popup Styles (Upgraded with AI API Key Intake)
    ========================================================================== */
 
 :root {
@@ -28,10 +28,10 @@ body {
 }
 
 .popup-container {
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 /* Header */
@@ -39,7 +39,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -83,7 +83,7 @@ body {
 }
 
 .form-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -102,17 +102,19 @@ body {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .custom-link-btn:hover {
   text-decoration: underline;
 }
 
-.custom-job-box {
+.custom-job-box, .api-key-box {
   background: rgba(37, 99, 235, 0.1);
   border: 1px dashed var(--accent-primary);
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px 10px;
+  margin: 6px 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -130,7 +132,7 @@ body {
   border-radius: 6px;
   padding: 6px 10px;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   outline: none;
 }
 
@@ -167,9 +169,9 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 9px 12px;
+  padding: 8px 12px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   outline: none;
   cursor: pointer;
@@ -185,8 +187,8 @@ body {
 .chips-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  max-height: 110px;
+  gap: 5px;
+  max-height: 90px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -195,8 +197,8 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  padding: 5px 10px;
-  border-radius: 16px;
+  padding: 4px 9px;
+  border-radius: 14px;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
@@ -221,14 +223,14 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 2px 12px;
+  padding: 2px 10px;
 }
 
 .setting-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 7px 0;
 }
 
 .setting-item:not(:last-child) {
@@ -251,7 +253,7 @@ body {
 .setting-desc {
   font-size: 10px;
   color: var(--text-secondary);
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 /* Stats Card */
@@ -272,7 +274,7 @@ body {
 }
 
 .stat-num {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent-primary);
 }
@@ -298,8 +300,8 @@ body {
 }
 
 .switch.mini {
-  width: 36px;
-  height: 20px;
+  width: 34px;
+  height: 18px;
 }
 
 .switch input {
@@ -336,8 +338,8 @@ body {
 }
 
 .switch.mini .slider:before {
-  height: 14px;
-  width: 14px;
+  height: 12px;
+  width: 12px;
   left: 3px;
   bottom: 3px;
 }
@@ -359,7 +361,7 @@ input:checked + .slider:before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 6px;
+  padding-top: 4px;
   border-top: 1px solid var(--border-color);
 }
 

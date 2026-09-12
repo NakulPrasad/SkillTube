@@ -74,6 +74,29 @@
 
         <div class="setting-item">
           <div class="setting-text">
+            <span class="setting-title">🤖 AI Semantic Classifier</span>
+            <span class="setting-desc">Use Browser AI / Gemini Nano for 100% video accuracy</span>
+          </div>
+          <label class="switch mini">
+            <input type="checkbox" id="ai-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Gemini API Key Input -->
+        <div class="api-key-box" id="api-key-box">
+          <div class="label-row">
+            <span class="form-label">Gemini API Key (Optional Cloud AI)</span>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="custom-link-btn">Get Free Key ↗</a>
+          </div>
+          <div class="input-inline">
+            <input type="password" id="gemini-key-input" placeholder="AIzaSy..." />
+            <button id="save-key-btn" class="btn-small">Save</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
             <span class="setting-title">🚫 Nuke YouTube Shorts</span>
             <span class="setting-desc">Remove algorithmic short-form loops completely</span>
           </div>

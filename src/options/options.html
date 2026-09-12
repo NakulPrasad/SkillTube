@@ -13,13 +13,26 @@
         <img src="../../icons/logo.png" class="brand-logo-img" alt="SkillTube Logo" />
         <div>
           <h1>SkillTube Configuration</h1>
-          <p>Customize your learning tracks, trusted creators, and stealth shield rules</p>
+          <p>Customize your learning tracks, trusted creators, and AI settings</p>
         </div>
       </div>
     </header>
 
     <div class="options-grid">
-      <!-- Section 1: Custom Blocked Keywords -->
+      <!-- Section 1: AI Classifier & Gemini API Key -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🤖 AI Semantic Video Classifier & API Key</h3>
+          <p>Leverage Microsoft Edge Copilot / Chrome Gemini Nano local AI or enter a Gemini API Key for 100% accurate video filtering.</p>
+        </div>
+        <div class="input-row">
+          <input type="password" id="opt-gemini-key" placeholder="Enter Gemini API Key (e.g. AIzaSy...)" />
+          <button id="opt-save-key-btn" class="btn btn-primary">Save Key</button>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn btn-secondary" style="text-decoration: none;">Get Free Key ↗</a>
+        </div>
+      </div>
+
+      <!-- Section 2: Custom Blocked Keywords -->
       <div class="card">
         <div class="card-header">
           <h3>🚫 Blacklisted Keywords (Feed & Sidebar Filter)</h3>
@@ -34,7 +47,7 @@
         </div>
       </div>
 
-      <!-- Section 2: Trusted Creators -->
+      <!-- Section 3: Trusted Creators -->
       <div class="card">
         <div class="card-header">
           <h3>🌟 Curated Channels & Mentors</h3>
@@ -43,7 +56,7 @@
         <div class="tags-list" id="creators-list"></div>
       </div>
 
-      <!-- Section 3: Data & Storage Management -->
+      <!-- Section 4: Data & Storage Management -->
       <div class="card">
         <div class="card-header">
           <h3>💾 Profile Backup & Cache</h3>

@@ -1,5 +1,5 @@
 /**
- * SkillTube - Options Page Logic
+ * SkillTube - Options Page Logic (Upgraded with AI Settings)
  */
 
 import { getSettings, updateSettings } from '../utils/storage.js';
@@ -14,7 +14,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const clearCacheBtn = document.getElementById("clear-cache-btn");
   const statusToast = document.getElementById("status-toast");
 
+  // API Key elements
+  const optGeminiKey = document.getElementById("opt-gemini-key");
+  const optSaveKeyBtn = document.getElementById("opt-save-key-btn");
+
   let settings = await getSettings();
+
+  optGeminiKey.value = settings.geminiApiKey || "";
+
+  optSaveKeyBtn.addEventListener("click", async () => {
+    const key = optGeminiKey.value.trim();
+    await updateSettings({ geminiApiKey: key });
+    showToast("Gemini API Key saved successfully!");
+  });
 
   // Render blocked tags
   function renderBlockedTags() {
@@ -82,9 +94,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Clear cache
   clearCacheBtn.addEventListener("click", () => {
     chrome.storage.local.get(null, (items) => {
-      const keysToRemove = Object.keys(items).filter(k => k.startsWith("cache_"));
+      const keysToRemove = Object.keys(items).filter(k => k.startsWith("cache_") || k.startsWith("aicache_"));
       chrome.storage.local.remove(keysToRemove, () => {
-        showToast("Video feed cache cleared!");
+        showToast("Video feed & AI cache cleared!");
       });
     });
   });

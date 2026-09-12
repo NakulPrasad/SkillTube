@@ -1,6 +1,6 @@
 /**
- * SkillTube - Storage Manager (Upgraded)
- * Handles defaults, caching, progress tracking, and reactive updates.
+ * SkillTube - Storage Manager (Upgraded with AI Settings)
+ * Handles defaults, caching, progress tracking, and AI configuration.
  */
 
 import { TAXONOMY } from './taxonomy.js';
@@ -18,11 +18,16 @@ export const DEFAULT_SETTINGS = {
   selectedTrackFilter: "all",
   customProfessions: {},
   blockedKeywords: ["shorts", "vlog", "prank", "reaction", "gaming", "unboxing"],
-  continueLearning: [], // Array of { id, title, channel, thumbnail, currentTime, duration, progressPercent, lastUpdated }
+  continueLearning: [],
+  // AI Settings
+  aiEnabled: true,
+  aiProvider: "auto", // "auto" | "window_ai" | "gemini"
+  geminiApiKey: "",
   stats: {
     videosShielded: 0,
     learningHours: 0,
-    feedItemsFiltered: 0
+    feedItemsFiltered: 0,
+    aiClassifications: 0
   }
 };
 
@@ -72,10 +77,8 @@ export async function saveContinueLearning(video) {
   const settings = await getSettings();
   let list = settings.continueLearning || [];
 
-  // Remove existing entry for this video if present
   list = list.filter(item => item.id !== video.id);
 
-  // If completed (>92%), don't show on continue shelf
   if (video.progressPercent < 92) {
     list.unshift({
       id: video.id,
@@ -89,7 +92,6 @@ export async function saveContinueLearning(video) {
     });
   }
 
-  // Keep top 6 items
   list = list.slice(0, 6);
   await updateSettings({ continueLearning: list });
 }
